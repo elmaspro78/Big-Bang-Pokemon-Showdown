@@ -22,13 +22,13 @@ exports.commands = {
 		if (!this.can('permaban')) return false;
 		target = this.splitTarget(target);
 		var userT = this.targetUser;
-		if (!userT) return this.sendReply("User '" + this.targetUsername + "' does not exist.");
-		if (userT.can('staff')) return this.sendReply("User '" + this.targetUsername + "' is an staff member. Demote before permaban.");
+		if (!userT) return this.sendReply("El usuario '" + this.targetUsername + "' no existe.");
+		if (userT.can('staff')) return this.sendReply("Usuario '" + this.targetUsername + "' es un miembro del Staff. Retirale el rango primero.");
 		if (Permaban.permaBan[userT.userid]) return this.sendReply("User '" + this.targetUsername + "' already perma banned.");
 		Permaban.permaBan[userT.userid] = 1;
-		userT.popup("" + user.name + " has banned you." + (target ? "\n\nReason: " + target : ""));
+		userT.popup("" + user.name + " te ha baneado permanentemente." + (target ? "\n\nMotivo: " + target : ""));
 		userT.ban();
-		this.addModCommand(this.targetUsername + " was permanently banned by " + user.name + (target ? ('. (' + target + ')') : '.'));
+		this.addModCommand(this.targetUsername + " ha sido banead@ permanentemente por " + user.name + (target ? ('. (' + target + ')') : '.'));
 		writePermaBanData();
 	},
 	

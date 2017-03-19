@@ -98,13 +98,13 @@ function parseStatus(text, encoding) {
  
 exports.commands = {
     away: function (target, room, user) {
-        if (!user.isAway && user.name.length > 15) return this.sendReply('Su nombre de usuario es demasiado largo para cualquier tipo de uso de este comando.');
+        if (!user.isAway && user.name.length > 25) return this.sendReply('Su nombre de usuario es demasiado largo para cualquier tipo de uso de este comando.');
  
         target = target ? target.replace(/[^a-zA-Z0-9]/g, '') : 'AWAY';
         var newName = user.name;
         var status = parseStatus(target, true);
         var statusLen = status.length;
-        if (statusLen > 14) return this.sendReply('Su estado ausente debe ser corto, no una disertación sobre por qué estás ausente.');
+        if (statusLen > 25) return this.sendReply('Su estado ausente debe ser corto, no una disertación sobre por qué estás ausente.');
  
         if (user.isAway) {
             var statusIdx = newName.search(/\s\-\s[\u24B6-\u24E9\u2460-\u2468\u24EA]+$/);
@@ -113,7 +113,7 @@ exports.commands = {
         }
  
         newName += ' - ' + status;
-        if (newName.length > 18) return this.sendReply('El tipo de ausente que trataste de seleccionar "' + target + '" es muy largo para tu nick.');
+        if (newName.length > 25) return this.sendReply('El tipo de ausente que trataste de seleccionar "' + target + '" es muy largo para tu nick.');
  
         // forcerename any possible impersonators
         var targetUser = Users.getExact(user.userid + target);
