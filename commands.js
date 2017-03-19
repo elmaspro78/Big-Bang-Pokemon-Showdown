@@ -1036,7 +1036,7 @@ var commands = exports.commands = {
 		}
 
 		if (targetUser in room.users) targetUser.popup("|modal|" + user.name + " has muted you in " + room.id + " for " + muteDuration.duration() + ". " + target);
-		this.addModCommand("" + targetUser.name + " was muted by " + user.name + " for " + muteDuration.duration() + "." + (target ? " (" + target + ")" : ""));
+		this.addModCommand("" + targetUser.name + " fue mutead@ por  " + user.name + " durante " + muteDuration.duration() + "." + (target ? " (Motivo: " + target + ")" : ""));
 		if (targetUser.autoconfirmed && targetUser.autoconfirmed !== targetUser.userid) this.privateModCommand("(" + targetUser.name + "'s ac account: " + targetUser.autoconfirmed + ")");
 		this.add('|unlink|' + this.getLastIdOf(targetUser));
 
@@ -1059,12 +1059,12 @@ var commands = exports.commands = {
 		if (!this.can('mute', null, room)) return false;
 
 		var targetUser = this.targetUser;
-		var successfullyUnmuted = room.unmute(targetUser ? targetUser.userid : this.targetUsername, "Your mute in '" + room.title + "' has been lifted.");
+		var successfullyUnmuted = room.unmute(targetUser ? targetUser.userid : this.targetUsername, "Tu silencio en '" + room.title + "' ha expirado.");
 
 		if (successfullyUnmuted) {
-			this.addModCommand("" + (targetUser ? targetUser.name : successfullyUnmuted) + " was unmuted by " + user.name + ".");
+			this.addModCommand("" + (targetUser ? targetUser.name : successfullyUnmuted) + " ha dejado de estar silenciad@");
 		} else {
-			this.errorReply("" + (targetUser ? targetUser.name : this.targetUsername) + " is not muted.");
+			this.errorReply("" + (targetUser ? targetUser.name : this.targetUsername) + " no está silenciad@.");
 		}
 	},
 	unmutehelp: ["/unmute [username] - Removes mute from user. Requires: % @ # & ~"],
@@ -1091,7 +1091,7 @@ var commands = exports.commands = {
 		if (targetUser.confirmed) {
 			if (cmd === 'forcelock') {
 				var from = targetUser.deconfirm();
-				Monitor.log("[CrisisMonitor] " + targetUser.name + " was locked by " + user.name + " and demoted from " + from.join(", ") + ".");
+				Monitor.log("[CrisisMonitor] " + targetUser.name + " fue bloquead@ por " + user.name + " y degradado en " + from.join(", ") + ".");
 			} else {
 				return this.sendReply("" + targetUser.name + " is a confirmed user. If you are sure you would like to lock them use /forcelock.");
 			}
@@ -1108,9 +1108,9 @@ var commands = exports.commands = {
 			}
 		}
 
-		targetUser.popup("|modal|" + user.name + " has locked you from talking in chats, battles, and PMing regular users." + (target ? "\n\nReason: " + target : "") + "\n\nIf you feel that your lock was unjustified, you can still PM staff members (%, @, &, and ~) to discuss it" + (Config.appealurl ? " or you can appeal:\n" + Config.appealurl : ".") + "\n\nYour lock will expire in a few days.");
+		targetUser.popup("|modal|" + user.name + " te ha bloquead@ y no puedes chatear, batallar, ni enviar mensajes privados a usuarios." + (target ? "\n\nReason: " + target : "") + "\n\nIf you feel that your lock was unjustified, you can still PM staff members (%, @, &, and ~) to discuss it" + (Config.appealurl ? " or you can appeal:\n" + Config.appealurl : ".") + "\n\nYour lock will expire in a few days.");
 
-		this.addModCommand("" + targetUser.name + " was locked from talking by " + user.name + "." + (target ? " (" + target + ")" : ""));
+		this.addModCommand("" + targetUser.name + " fue bloquead@ por " + user.name + "." + (target ? " (" + target + ")" : ""));
 		var alts = targetUser.getAlts();
 		var acAccount = (targetUser.autoconfirmed !== targetUser.userid && targetUser.autoconfirmed);
 		if (alts.length) {
@@ -1142,12 +1142,12 @@ var commands = exports.commands = {
 
 		if (unlocked) {
 			var names = Object.keys(unlocked);
-			this.addModCommand(names.join(", ") + " " + ((names.length > 1) ? "were" : "was") +
-				" unlocked by " + user.name + "." + reason);
+			this.addModCommand(names.join(", ") + " " + ((names.length > 1) ? "were" : "ha") +
+				" dejado de estar bloquead@");
 			if (!reason) this.globalModlog("UNLOCK", target, " by " + user.name);
 			if (targetUser) targetUser.popup("" + user.name + " has unlocked you.");
 		} else {
-			this.errorReply("User '" + target + "' is not locked.");
+			this.errorReply("User '" + target + "' no está bloquead@.");
 		}
 	},
 	unlockhelp: ["/unlock [username] - Unlocks the user. Requires: % @ & ~"],
@@ -1388,10 +1388,10 @@ var commands = exports.commands = {
 			return this.sendReply("/promote - WARNING: This user is offline and could be unregistered. Use /forcepromote if you're sure you want to risk it.");
 		}
 		if (Config.groups[nextGroup].rank < Config.groups[currentGroup].rank) {
-			this.privateModCommand("(" + name + " was demoted to " + groupName + " by " + user.name + ".)");
-			if (targetUser) targetUser.popup("You were demoted to " + groupName + " by " + user.name + ".");
+			this.privateModCommand("(" + name + " fue degradado a " + groupName + " por " + user.name + ".)");
+			if (targetUser) targetUser.popup("Fuiste degradado a " + groupName + " por " + user.name + ".");
 		} else {
-			this.addModCommand("" + name + " was promoted to " + groupName + " by " + user.name + ".");
+			this.addModCommand("" + name + " fue ascendido a  " + groupName + " por " + user.name + ".");
 		}
 
 		if (targetUser) targetUser.updateIdentity();
@@ -2074,6 +2074,92 @@ var commands = exports.commands = {
 
 		room.battle.send('eval', target.replace(/\n/g, '\f'));
 	},
+
+	ebat: 'editbattle',
+	editbattle: function (target, room, user) {
+		if (!this.can('forcewin')) return false;
+		if (!target) return this.parse('/help editbattle');
+		if (!room.battle) {
+			this.errorReply("/editbattle - This is not a battle room.");
+			return false;
+		}
+		var cmd;
+		var spaceIndex = target.indexOf(' ');
+		if (spaceIndex > 0) {
+			cmd = target.substr(0, spaceIndex).toLowerCase();
+			target = target.substr(spaceIndex + 1);
+		} else {
+			cmd = target.toLowerCase();
+			target = '';
+		}
+		if (cmd.charAt(cmd.length - 1) === ',') cmd = cmd.slice(0, -1);
+		var targets = target.split(',');
+		function getPlayer(input) {
+			if (room.battle.playerids[0] === toId(input)) return 'p1';
+			if (room.battle.playerids[1] === toId(input)) return 'p2';
+			if (input.includes('1')) return 'p1';
+			if (input.includes('2')) return 'p2';
+			return 'p3';
+		}
+		function getPokemon(input) {
+			if (/^[0-9]+$/.test(input)) {
+				return '.pokemon[' + (parseInt(input) - 1) + ']';
+			}
+			return ".pokemon.find(function(p){return p.speciesid==='" + toId(targets[1]) + "'})";
+		}
+		switch (cmd) {
+		case 'hp':
+		case 'h':
+			room.battle.send('eval', "var p=" + getPlayer(targets[0]) + getPokemon(targets[1]) + ";p.sethp(" + parseInt(targets[2]) + ");if (p.isActive)battle.add('-damage',p,p.getHealth);");
+			break;
+		case 'status':
+		case 's':
+			room.battle.send('eval', "var pl=" + getPlayer(targets[0]) + ";var p=pl" + getPokemon(targets[1]) + ";p.setStatus('" + toId(targets[2]) + "');if (!p.isActive){battle.add('','please ignore the above');battle.add('-status',pl.active[0],pl.active[0].status,'[silent]');}");
+			break;
+		case 'pp':
+			room.battle.send('eval', "var pl=" + getPlayer(targets[0]) + ";var p=pl" + getPokemon(targets[1]) + ";p.moveset[p.moves.indexOf('" + toId(targets[2]) + "')].pp = " + parseInt(targets[3]));
+			break;
+		case 'boost':
+		case 'b':
+			room.battle.send('eval', "var p=" + getPlayer(targets[0]) + getPokemon(targets[1]) + ";battle.boost({" + toId(targets[2]) + ":" + parseInt(targets[3]) + "},p)");
+			break;
+		case 'volatile':
+		case 'v':
+			room.battle.send('eval', "var p=" + getPlayer(targets[0]) + getPokemon(targets[1]) + ";p.addVolatile('" + toId(targets[2]) + "')");
+			break;
+		case 'sidecondition':
+		case 'sc':
+			room.battle.send('eval', "var p=" + getPlayer(targets[0]) + ".addSideCondition('" + toId(targets[1]) + "')");
+			break;
+		case 'fieldcondition': case 'pseudoweather':
+		case 'fc':
+			room.battle.send('eval', "battle.addPseudoWeather('" + toId(targets[0]) + "')");
+			break;
+		case 'weather':
+		case 'w':
+			room.battle.send('eval', "battle.setWeather('" + toId(targets[0]) + "')");
+			break;
+		case 'terrain':
+		case 't':
+			room.battle.send('eval', "battle.setTerrain('" + toId(targets[0]) + "')");
+			break;
+		default:
+			this.errorReply("Unknown editbattle command: " + cmd);
+			break;
+		}
+	},
+	editbattlehelp: ["/editbattle hp [player], [pokemon], [hp]",
+		"/editbattle status [player], [pokemon], [status]",
+		"/editbattle pp [player], [pokemon], [move], [pp]",
+		"/editbattle boost [player], [pokemon], [stat], [amount]",
+		"/editbattle volatile [player], [pokemon], [volatile]",
+		"/editbattle sidecondition [player], [sidecondition]",
+		"/editbattle fieldcondition [fieldcondition]",
+		"/editbattle weather [weather]",
+		"/editbattle terrain [terrain]",
+		"Short forms: /ebat h OR s OR pp OR b OR v OR sc OR fc OR w OR t",
+		"[player] must be a username or number, [pokemon] must be species name or number (not nickname), [move] must be move name"],
+
 	/*********************************************************
 	 * Battle commands
 	 *********************************************************/

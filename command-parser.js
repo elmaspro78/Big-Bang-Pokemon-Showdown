@@ -95,15 +95,15 @@ var writeModlog = exports.writeModlog = function (roomid, text) {
  */
 function canTalk(user, room, connection, message, targetUser) {
 	if (!user.named) {
-		connection.popup("You must choose a name before you can talk.");
+		connection.popup("Inicia sesión para empezar a chatear.");
 		return false;
 	}
 	if (room && user.locked) {
-		connection.sendTo(room, "You are locked from talking in chat.");
+		connection.sendTo(room, "Estás bloqueado y no puedes chatear.");
 		return false;
 	}
 	if (room && room.isMuted(user)) {
-		connection.sendTo(room, "You are muted and cannot talk in this room.");
+		connection.sendTo(room, "Estás silenciado y no puedes chatear.");
 		return false;
 	}
 	if (room && room.modchat) {
@@ -148,7 +148,7 @@ function canTalk(user, room, connection, message, targetUser) {
 			var normalized = message.trim();
 			if ((normalized === user.lastMessage) &&
 					((Date.now() - user.lastMessageTime) < MESSAGE_COOLDOWN)) {
-				connection.popup("You can't send the same message again so soon.");
+				connection.popup("No puedes repetir la última frase que dijiste.");
 				return false;
 			}
 			user.lastMessage = message;
